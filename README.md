@@ -387,53 +387,6 @@ export const DELETE: RequestHandler = async ({ request }) => {
 
 [`finial/src/routes/api/blob/+server.ts`](finial/src/routes/api/blob/+server.ts)
 
-## 最终检查
-
-在 `practice` 目录运行：
-
-```bash
-npm run check
-npm run build
-```
-
-预期结果：
-
-- `npm run check` 为 0 errors、0 warnings；
-- `npm run build` 成功；
-- Upload 可以上传并预览图片；
-- Load Gallery 可以读取 `tech-share/` 中的图片；
-- Delete 可以删除指定图片。
-
-## 直接运行完整的 Finial
-
-如果不需要逐步实现，可以直接运行最终版本。
-
-Git Bash：
-
-```bash
-cd finial
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-PowerShell：
-
-```powershell
-cd finial
-npm install
-Copy-Item .env.example .env.local
-npm run dev
-```
-
-填入 `.env.local` 后，在 VS Code Integrated Browser 中打开终端显示的 localhost 地址。
-
-## 课堂总结
-
-1. **What is Vercel Blob?** Cloud object storage for images, videos and documents.
-2. **How do we use it?** `put()` uploads, `list()` reads the file list, and `del()` deletes.
-3. **Why do we need it?** It provides persistent file storage without managing our own storage server.
-
 ## 安全说明
 
 - `.env.local` 已被 Git 忽略；
