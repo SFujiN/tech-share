@@ -31,8 +31,6 @@ tech share/
 - [`finial/`](finial/) is the reference version after all stages are complete.
 - `practice/` is the local working copy you create. It is ignored by `.gitignore`.
 
-> `finial` is the directory name already chosen for this project, so this spelling is intentionally preserved.
-
 The frontends in `demo` and `finial` are identical. The difference is:
 
 - [`demo/src/routes/api/blob/+server.ts`](demo/src/routes/api/blob/+server.ts) is a pre-created empty file;
