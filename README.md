@@ -1,45 +1,50 @@
-# Svelte 技术分享
+# Vercel Blob Tech Share
 
-这个仓库把课堂展示代码和个人调试代码分开保存：
+这个仓库用于课堂 Tech Share：通过一个 SvelteKit Cloud Photo Gallery，现场演示如何把图片上传到 Vercel Blob、通过 URL 显示图片、读取云端文件列表，以及删除文件。
 
-- `demo/`：完成 SvelteKit 初始化后的最原始代码，适合课堂上从这里开始演示。
-- `finial/`：完成姓名绑定、猫咪知识请求、加载与错误状态、列表渲染和计数器组件后的最终代码。
+## 仓库结构
 
-> 目录名 `finial` 按本次项目约定保留。
+- [`demo/`](demo/)：课堂开始时打开的版本。SvelteKit 和 `@vercel/blob` 已完成初始化，但还没有实现 Gallery 功能。
+- [`finial/`](finial/)：完整的调试版本，包含 `put()`、`list()` 和 `del()`。
+- [`finial/README.md`](finial/README.md)：从 `demo` 逐步做到 `finial` 的现场复制粘贴指南。
+
+> `finial` 是本次项目约定的目录名称，因此保留这一拼写。
+
+## Demo 最终效果
+
+最终页面支持：
+
+1. 选择一张 JPG、PNG 或 WebP 图片。
+2. 将小于 4 MB 的图片上传到 Vercel Blob。
+3. 显示 Blob 返回的公开 URL 和图片。
+4. 加载 `tech-share/` 目录下的云端图片。
+5. 从 Gallery 中删除图片。
 
 ## 快速开始
 
-需要先安装 Node.js 和 npm。
-
-### 运行课堂初始版本
+课堂起点：
 
 ```powershell
 cd demo
 npm install
+Copy-Item .env.example .env.local
 npm run dev -- --open
 ```
 
-### 运行最终版本
+最终版本：
 
 ```powershell
 cd finial
 npm install
+Copy-Item .env.example .env.local
 npm run dev -- --open
 ```
 
-浏览器会打开终端中显示的本地地址。开发服务器运行期间，保存代码后页面会自动刷新。
+运行上传、列表和删除功能前，需要先在 `.env.local` 中配置自己的 Vercel Blob 凭据。详细配置过程见 [`finial/README.md`](finial/README.md)。
 
-## 从 `demo` 做到 `finial`
+## 安全说明
 
-请阅读 [`finial/README.md`](finial/README.md)。里面按照课堂演示顺序列出了每一步、需要复制的完整代码，以及最后的检查命令。
-
-## 常用命令
-
-以下命令需要在 `demo` 或 `finial` 目录中运行：
-
-```powershell
-npm run dev      # 启动开发服务器
-npm run check    # 检查 Svelte 和 TypeScript
-npm run build    # 创建生产构建
-npm run preview  # 本地预览生产构建
-```
+- `.env.local` 已被 Git 忽略。
+- 不要把真实的 `BLOB_READ_WRITE_TOKEN` 写进代码、README、截图或 Git 提交。
+- 仓库中的 `.env.example` 只有空白占位符。
+- 这是没有登录验证的课堂 Demo，不应直接作为公开生产上传接口使用。
