@@ -10,17 +10,29 @@
 
 ## 首次运行
 
+Git Bash：
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev -- --open
+```
+
+PowerShell：
+
 ```powershell
 npm install
 Copy-Item .env.example .env.local
 npm run dev -- --open
 ```
 
+请逐行执行命令，不要复制终端提示符 `$`，也不要在行末添加 `\`。
+
 然后打开 `.env.local`，填入你自己的 Vercel Blob 凭据。不要提交这个文件。
 
 ## 从空目录重新完成初始化
 
-```powershell
+```bash
 npx sv create blob-demo
 cd blob-demo
 npm install

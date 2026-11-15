@@ -21,7 +21,18 @@
 
 ### 0.1 准备练习目录
 
-在仓库根目录执行：
+在仓库根目录执行。请逐行输入，不要复制终端提示符 `$`，也不要在行末添加 `\`。
+
+Git Bash：
+
+```bash
+cp -r demo practice
+cd practice
+npm install
+cp .env.example .env.local
+```
+
+PowerShell：
 
 ```powershell
 Copy-Item -Recurse demo practice
@@ -50,7 +61,7 @@ BLOB_READ_WRITE_TOKEN=your_real_token_here
 
 也可以安装 Vercel CLI 后，在 `practice` 中执行：
 
-```powershell
+```bash
 vercel link
 vercel env pull .env.local
 ```
@@ -61,7 +72,7 @@ Vercel 在 2026 年为新连接逐步采用 OIDC。如果 Dashboard 没有显示
 
 ### 0.3 启动开发服务器
 
-```powershell
+```bash
 npm run dev -- --open
 ```
 
@@ -402,7 +413,7 @@ Browser ───────────────→ Vercel Blob
 
 在 `practice` 目录运行：
 
-```powershell
+```bash
 npm run check
 npm run build
 ```
@@ -416,6 +427,16 @@ npm run build
 - Delete 会把图片从 Gallery 移除。
 
 如果不需要现场逐步实现，可以直接运行当前 `finial` 目录：
+
+Git Bash：
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev -- --open
+```
+
+PowerShell：
 
 ```powershell
 npm install

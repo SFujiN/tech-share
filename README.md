@@ -22,6 +22,30 @@
 
 ## 快速开始
 
+以下命令需要逐行执行。不要复制终端提示符 `$`，也不要在每行末尾添加 `\`。
+
+### Git Bash
+
+课堂起点：
+
+```bash
+cd demo
+npm install
+cp .env.example .env.local
+npm run dev -- --open
+```
+
+最终版本：
+
+```bash
+cd finial
+npm install
+cp .env.example .env.local
+npm run dev -- --open
+```
+
+### PowerShell
+
 课堂起点：
 
 ```powershell
