@@ -7,7 +7,7 @@
 - 安装 `@vercel/blob`。
 - 准备不会泄漏 Token 的 `.env.example`。
 - 提前完成文件选择、Upload 按钮、请求和结果提示界面。
-- 提前完成后端表单读取及图片校验，课堂上只粘贴 `put()` 核心代码。
+- 提前创建空白的后端 route 文件，全部后端代码都在课堂上分阶段粘贴。
 
 ## 课堂文件已经全部准备好
 
@@ -16,9 +16,9 @@
 | `.env.example` | 已创建，只有空白凭据占位符 | 不修改 |
 | `src/env.ts` | 已完成环境变量初始化 | 不修改 |
 | `src/routes/+page.svelte` | 已包含上传、预览、Gallery、删除界面及全部前端请求 | Stage 1–4 无需修改 |
-| `src/routes/api/blob/+server.ts` | 已包含 POST、GET、DELETE 骨架和输入校验 | Stage 1、3、4 分别加入 `put()`、`list()`、`del()` |
+| `src/routes/api/blob/+server.ts` | 已创建，为空文件 | Stage 1–4 分段粘贴全部后端代码 |
 
-Stage 2 只演示已有图片预览，不写代码；Stage 3 和 Stage 4 也只修改现有的后端文件。课堂上不会创建文件、文件夹，也不会粘贴前端代码。
+四个阶段只修改现有的后端文件：Stage 1 接收并检查文件，Stage 2 使用 `put()` 上传，Stage 3 使用 `list()` 读取，Stage 4 使用 `del()` 删除。课堂上不会创建文件、文件夹，也不会粘贴前端代码。
 
 ## 首次运行
 

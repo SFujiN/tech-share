@@ -4,7 +4,7 @@
 
 ## 仓库结构
 
-- [`demo/`](demo/)：课堂开始时打开的版本。完整前端和后端接口骨架已准备好，只缺少三个 Blob SDK 调用。
+- [`demo/`](demo/)：课堂开始时打开的版本。完整前端已准备好，后端 route 是空文件，供现场分阶段完成。
 - [`finial/`](finial/)：完整的调试版本，包含 `put()`、`list()` 和 `del()`。
 - [`finial/README.md`](finial/README.md)：从 `demo` 逐步做到 `finial` 的现场复制粘贴指南。
 

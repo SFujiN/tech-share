@@ -7,12 +7,14 @@
   let selectedFile = $state<File | null>(null);
   let imageUrl = $state('');
   let error = $state('');
+  let message = $state('');
   let images = $state<GalleryImage[]>([]);
 
   async function uploadImage() {
     if (!selectedFile) return;
 
     error = '';
+    message = '';
     imageUrl = '';
     const form = new FormData();
     form.append('file', selectedFile);
@@ -22,13 +24,15 @@
       body: form
     });
 
-    const data: { error?: string; url?: string } = await response.json();
+    const data: { error?: string; message?: string; url?: string } =
+      await response.json();
 
     if (!response.ok) {
       error = data.error ?? 'Upload failed';
       return;
     }
 
+    message = data.message ?? '';
     imageUrl = data.url ?? '';
   }
 
@@ -90,6 +94,10 @@
 
   {#if error}
     <p class="error">{error}</p>
+  {/if}
+
+  {#if message}
+    <p class="message">{message}</p>
   {/if}
 
   {#if imageUrl}
@@ -173,6 +181,10 @@
 
   .error {
     color: #b42318;
+  }
+
+  .message {
+    color: #175cd3;
   }
 
   .success {
