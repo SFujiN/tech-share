@@ -1,31 +1,32 @@
 # Finial：Cloud Photo Gallery 完整版
 
-这份指南从 [`../demo`](../demo/) 开始，按课堂演示顺序逐步实现 Vercel Blob Cloud Photo Gallery。每完成一个 Stage，页面都会获得一个可以立即演示的新功能。
+这份指南从 [`../demo`](../demo/) 开始，按课堂演示顺序实现 Vercel Blob Cloud Photo Gallery。
+
+本次现场 Coding 的重点是云存储后端。文件选择、按钮、上传请求、图片预览、Gallery 和 Delete 按钮都已经放进 `demo`；课堂上不需要粘贴大段前端代码，只需要逐步补上 `put()`、`list()` 和 `del()`。
 
 ## 课堂流程
 
-| Stage | 演示结果 | Vercel Blob 知识点 |
+| Stage | 演示结果 | 现场加入的核心代码 |
 | --- | --- | --- |
-| 0. Setup | 项目可以运行并连接 Blob Store | Blob Storage、环境变量 |
-| 1. Upload | 上传图片并获得 URL | `put()` |
-| 2. Display | 在页面显示云端图片 | Public URL |
-| 3. List | 加载所有已上传图片 | `list()`、prefix |
+| 0. Setup | 项目运行并连接 Blob Store | 不写代码 |
+| 1. Upload | 上传图片并获得云端 URL | `put()` |
+| 2. Display | 用 Blob URL 直接显示图片 | 不写代码，只讲解已有 `<img>` |
+| 3. List | 加载所有已上传图片 | `list()` |
 | 4. Delete | 从 Gallery 删除图片 | `del()` |
-| 5. Advanced | 只讲解，不现场实现 | Server Upload 与 Client Upload |
+| 5. Advanced | 对比 Server Upload 与 Client Upload | 只讲解 |
 
 建议把 Stage 1–4 控制在 10–12 分钟，Stage 5 用 2–3 分钟解释架构。
 
 ## Stage 0：提前完成准备工作
 
-这部分应在上课前完成，不要把创建项目和配置凭据占用课堂时间。
-
-### 0.1 准备练习目录
+### 0.1 创建干净的练习副本
 
 在仓库根目录执行。请逐行输入，不要复制终端提示符 `$`，也不要在行末添加 `\`。
 
 Git Bash：
 
 ```bash
+rm -rf -- practice
 cp -r demo practice
 cd practice
 npm install
@@ -35,25 +36,26 @@ cp .env.example .env.local
 PowerShell：
 
 ```powershell
+Remove-Item -Recurse -Force practice
 Copy-Item -Recurse demo practice
 cd practice
 npm install
 Copy-Item .env.example .env.local
 ```
 
-后面的所有代码都修改 `practice`，这样原始 `demo` 会保持不变。
+删除旧 `practice` 会同时删除其中的 `.env.local` 和练习修改。需要保留凭据时，先把值记录到安全位置。
 
-`demo/src/env.ts` 已按当前 SvelteKit 3 的方式声明私有环境变量，因此后端可以从 `$app/env/private` 导入 Token，而不会把它发送到浏览器。
+后面的操作全部在 `practice` 中完成，原始 `demo` 保持不变。`practice/` 已被仓库根目录的 `.gitignore` 忽略。
 
-### 0.2 创建 Vercel Blob Store
+### 0.2 连接 Vercel Blob Store
 
 1. 在 Vercel Dashboard 创建或选择一个 Project。
 2. 打开该 Project 的 Storage 页面并创建 Blob Store。
-3. 选择 **Public**，因为 Demo 需要把 Blob URL 直接放进 `<img>`。
+3. 选择 **Public**，因为页面会把 Blob URL 直接放进 `<img>`。
 4. 将 Blob Store 连接到 Project。
-5. 获取本地开发所需的环境变量。
+5. 获取本地开发需要的环境变量。
 
-原对话采用 `BLOB_READ_WRITE_TOKEN`。把自己的值放进 `practice/.env.local`：
+把凭据写入 `practice/.env.local`：
 
 ```env
 BLOB_READ_WRITE_TOKEN=your_real_token_here
@@ -66,336 +68,179 @@ vercel link
 vercel env pull .env.local
 ```
 
-Vercel 在 2026 年为新连接逐步采用 OIDC。如果 Dashboard 没有显示长期 Token，请使用当前 Dashboard 提供的 Project 连接方式和最新版 Vercel CLI；`@vercel/blob` 会读取 Vercel 提供的环境凭据。
+Vercel 在 2026 年为新连接逐步采用 OIDC。如果 Dashboard 没有显示长期 Token，请使用 Dashboard 当前提供的 Project 连接方式和最新版 Vercel CLI。无论采用哪种方式，都不要把 `.env.local` 上传到 GitHub。
 
-无论使用哪种连接方式，都不要把 `.env.local` 上传到 GitHub。
-
-### 0.3 启动开发服务器
+### 0.3 启动服务器并在 VS Code 中预览
 
 ```bash
-npm run dev -- --open
+npm run dev
 ```
 
-浏览器显示 “Ready for Stage 1” 后即可开始现场演示。
+不要添加 `--open`。在 VS Code 中按 `Ctrl + Alt + /` 打开 Integrated Browser，然后访问终端显示的 localhost 地址。端口通常是 `5173`，但应以终端实际地址为准。
 
-### 0.4 课堂文件检查
+初始页面已经有以下界面：
 
-开始演示前，以下文件已经全部存在：
+- 图片选择框和 Upload 按钮；
+- 上传成功或失败提示；
+- 上传图片预览；
+- Load Gallery 按钮；
+- Gallery 卡片和 Delete 按钮。
+
+此时选择图片并点击 Upload，会看到 “Complete the Stage 1 upload code first”。这说明前端请求和后端接口骨架都已经连通，只有真正的 Blob 上传尚未实现。
+
+### 0.4 课堂文件状态
 
 | 文件 | 开始时的状态 | 课堂操作 |
 | --- | --- | --- |
-| `src/routes/+page.svelte` | 最原始页面 | Stage 1 替换代码 |
-| `src/routes/api/blob/+server.ts` | 空文件 | Stage 1 粘贴代码 |
-| `src/env.ts` | 已完成初始化 | 无需修改 |
-| `.env.example` | 空白凭据模板 | 无需修改 |
+| `src/routes/+page.svelte` | 完整课堂界面和所有前端请求 | 无需修改 |
+| `src/routes/api/blob/+server.ts` | POST、GET、DELETE 骨架及输入校验 | 只补三个 Blob SDK 调用 |
+| `src/env.ts` | 已完成私有环境变量声明 | 无需修改 |
+| `.env.example` | 凭据模板 | 无需修改 |
 
-Stage 2–4 只会继续编辑已经存在的 `+page.svelte` 和 `+server.ts`，课堂现场没有任何新建文件或文件夹操作。
+课堂现场不需要创建文件、文件夹，也不需要粘贴前端代码。
 
 ## Stage 1：Upload an Image
 
-目标：选择一张图片，点击 Upload，并获得 Vercel Blob 返回的 URL。
+目标：选择一张图片，点击 Upload，使用 `put()` 上传并获得云端 URL。
 
-### 1.1 粘贴后端接口代码
+打开 `src/routes/api/blob/+server.ts`。
 
-打开 `demo` 中已经提前创建好的空文件 `src/routes/api/blob/+server.ts`，直接粘贴以下代码。课堂现场不需要新建文件或文件夹：
+### 1.1 加入两个导入
+
+放在现有 `RequestHandler` 导入下面：
 
 ```ts
-import type { RequestHandler } from './$types';
 import { put } from '@vercel/blob';
 import { BLOB_READ_WRITE_TOKEN } from '$app/env/private';
-
-export const POST: RequestHandler = async ({ request }) => {
-  const form = await request.formData();
-  const file = form.get('file');
-
-  if (
-    !(file instanceof File) ||
-    !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
-    file.size > 4 * 1024 * 1024
-  ) {
-    return Response.json(
-      { error: 'Choose a JPG, PNG or WebP image under 4 MB' },
-      { status: 400 }
-    );
-  }
-
-  const blob = await put(`tech-share/${file.name}`, file, {
-    access: 'public',
-    addRandomSuffix: true,
-    token: BLOB_READ_WRITE_TOKEN
-  });
-
-  return Response.json({
-    url: blob.url,
-    pathname: blob.pathname
-  });
-};
 ```
 
-这段代码完成三件事：
+### 1.2 用 `put()` 替换临时响应
 
-1. 从 `FormData` 中读取文件。
-2. 只接受小于 4 MB 的 JPG、PNG 和 WebP。
-3. 使用 `put()` 上传到 `tech-share/`，并返回 URL 与 pathname。
+找到 POST 接口末尾带有 `Stage 1` 注释的临时响应，只把那段临时响应替换为：
 
-`addRandomSuffix: true` 会避免同名图片互相覆盖。
+```ts
+const blob = await put(`tech-share/${file.name}`, file, {
+  access: 'public',
+  addRandomSuffix: true,
+  token: BLOB_READ_WRITE_TOKEN
+});
 
-### 1.2 替换前端页面
-
-使用以下代码替换 `src/routes/+page.svelte`：
-
-```svelte
-<script lang="ts">
-  let selectedFile = $state<File | null>(null);
-  let imageUrl = $state('');
-  let error = $state('');
-
-  async function uploadImage() {
-    if (!selectedFile) return;
-
-    error = '';
-    const form = new FormData();
-    form.append('file', selectedFile);
-
-    const response = await fetch('/api/blob', {
-      method: 'POST',
-      body: form
-    });
-
-    const data: { error?: string; url?: string } = await response.json();
-
-    if (!response.ok) {
-      error = data.error ?? 'Upload failed';
-      return;
-    }
-
-    imageUrl = data.url ?? '';
-  }
-</script>
-
-<h1>My Cloud Gallery</h1>
-
-<input
-  type="file"
-  accept="image/jpeg,image/png,image/webp"
-  onchange={(event) =>
-    selectedFile = event.currentTarget.files?.[0] ?? null
-  }
-/>
-
-<button onclick={uploadImage} disabled={!selectedFile}>
-  Upload
-</button>
-
-{#if error}
-  <p>{error}</p>
-{/if}
-
-{#if imageUrl}
-  <p>Upload successful!</p>
-  <a href={imageUrl} target="_blank" rel="noreferrer">
-    Open uploaded file
-  </a>
-{/if}
+return Response.json({
+  url: blob.url,
+  pathname: blob.pathname
+});
 ```
 
-现场选择一张小图片并点击 Upload，然后点击返回的链接。此时可以解释：
+这就是 Stage 1 需要现场粘贴的主要代码。已有骨架已经负责读取 `FormData`，并限制为小于 4 MB 的 JPG、PNG 或 WebP。
 
-> The image is now stored in Vercel Blob instead of our local project.
+`addRandomSuffix: true` 会避免同名文件互相覆盖。`tech-share/` 是这个 Demo 使用的 Blob 路径前缀。
+
+保存后选择图片并点击 Upload。页面已有的前端会自动：
+
+1. 把图片放入 `FormData`；
+2. 向 `/api/blob` 发送 POST 请求；
+3. 读取后端返回的 URL；
+4. 显示成功提示和链接。
 
 ## Stage 2：Display the Image
 
-目标：把 Blob URL 直接用于 HTML `<img>`。
+目标：说明 Public Blob URL 可以直接作为网页图片地址。
 
-在 `+page.svelte` 的 `{#if imageUrl}` 中，放在链接后面：
-
-```svelte
-<img
-  src={imageUrl}
-    alt="Uploaded preview"
-  width="320"
-/>
-```
-
-完整的条件块变为：
+这一阶段不修改代码。Stage 1 上传成功后，页面已经使用以下已有代码显示图片：
 
 ```svelte
-{#if imageUrl}
-  <p>Upload successful!</p>
-  <a href={imageUrl} target="_blank" rel="noreferrer">
-    Open uploaded file
-  </a>
-  <img
-    src={imageUrl}
-    alt="Uploaded preview"
-    width="320"
-  />
-{/if}
+<img class="preview" src={imageUrl} alt="Uploaded preview" />
 ```
 
-可以把 URL 复制到另一个标签页打开，说明图片不在浏览器临时状态或本地 `static` 文件夹中。
+现场可以点击 “Open uploaded file”，或复制 URL 在另一个标签页打开，并解释：
+
+> The image is stored in Vercel Blob, not in our local project or browser memory.
+
+因为 Blob Store 是 Public，浏览器可以直接读取这个 URL。前端只保存 URL，不保存图片文件本身。
 
 ## Stage 3：List All Images
 
-目标：把单张图片上传器扩展成 Gallery。
+目标：使用 `list()` 读取 `tech-share/` 中已经上传的图片。
 
-### 3.1 向现有后端文件添加 GET 接口
+前端的 Load Gallery 按钮和 `loadImages()` 请求已经准备好，只需要实现后端 GET。
 
-把 `+server.ts` 的 SDK 导入改为：
+### 3.1 修改 SDK 导入
+
+把：
+
+```ts
+import { put } from '@vercel/blob';
+```
+
+改成：
 
 ```ts
 import { list, put } from '@vercel/blob';
 ```
 
-在文件末尾追加：
+### 3.2 用 `list()` 替换空数组
+
+在 GET 接口中找到带有 `Stage 3` 注释的 `return Response.json([]);`，将它替换为：
 
 ```ts
-export const GET: RequestHandler = async () => {
-  const { blobs } = await list({
-    prefix: 'tech-share/',
-    limit: 30,
-    token: BLOB_READ_WRITE_TOKEN
-  });
+const { blobs } = await list({
+  prefix: 'tech-share/',
+  limit: 30,
+  token: BLOB_READ_WRITE_TOKEN
+});
 
-  return Response.json(
-    blobs.map(({ url, pathname }) => ({
-      url,
-      pathname
-    }))
-  );
-};
+return Response.json(
+  blobs.map(({ url, pathname }) => ({
+    url,
+    pathname
+  }))
+);
 ```
 
-### 3.2 向现有页面添加状态和请求函数
+保存后点击 Load Gallery。已有前端会请求 GET `/api/blob`，并把返回的每个 `url` 和 `pathname` 渲染成图片卡片。
 
-在 `+page.svelte` 的 `<script>` 中，放在已有状态后面：
-
-```ts
-type GalleryImage = {
-  url: string;
-  pathname: string;
-};
-
-let images = $state<GalleryImage[]>([]);
-
-async function loadImages() {
-  const response = await fetch('/api/blob');
-
-  if (!response.ok) {
-    error = 'Failed to load images';
-    return;
-  }
-
-  images = await response.json();
-}
-```
-
-### 3.3 渲染 Gallery
-
-在页面底部追加：
-
-```svelte
-<h2>My Gallery</h2>
-
-<button onclick={loadImages}>
-  Load Gallery
-</button>
-
-<div class="gallery">
-  {#each images as photo (photo.pathname)}
-    <div>
-      <img
-        src={photo.url}
-        alt={photo.pathname}
-        width="160"
-      />
-      <p>{photo.pathname}</p>
-    </div>
-  {/each}
-</div>
-
-<style>
-  .gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 20px;
-  }
-</style>
-```
-
-上传三张不同图片，点击 Load Gallery。刷新页面后再次点击，图片仍然存在，这一步用于解释浏览器状态与持久化云存储的区别。
+上传几张图片、刷新页面后再次点击 Load Gallery。图片仍然存在，说明数据位于持久化云存储中，而不是只存在于当前浏览器状态。
 
 ## Stage 4：Delete an Image
 
 目标：使用 `del()` 删除选中的 Blob。
 
-### 4.1 向现有后端文件添加 DELETE 接口
+每张 Gallery 卡片的 Delete 按钮和前端 DELETE 请求已经准备好，只需要实现后端删除操作。
 
-把 `+server.ts` 的 SDK 导入改为：
+### 4.1 修改 SDK 导入
+
+把：
+
+```ts
+import { list, put } from '@vercel/blob';
+```
+
+改成：
 
 ```ts
 import { del, list, put } from '@vercel/blob';
 ```
 
-在文件末尾追加：
+### 4.2 用 `del()` 替换临时响应
+
+DELETE 接口已经读取并检查 `pathname`，确保它以 `tech-share/` 开头。找到带有 `Stage 4` 注释的临时响应，将它替换为：
 
 ```ts
-export const DELETE: RequestHandler = async ({ request }) => {
-  const { pathname } = await request.json();
+await del(pathname, {
+  token: BLOB_READ_WRITE_TOKEN
+});
 
-  if (
-    typeof pathname !== 'string' ||
-    !pathname.startsWith('tech-share/')
-  ) {
-    return Response.json(
-      { error: 'Invalid pathname' },
-      { status: 400 }
-    );
-  }
-
-  await del(pathname, {
-    token: BLOB_READ_WRITE_TOKEN
-  });
-
-  return Response.json({ success: true });
-};
+return Response.json({ success: true });
 ```
 
-pathname 检查可防止这个 Demo 接口删除 `tech-share/` 之外的 Blob。
+保存后点击任意图片的 Delete。已有前端会：
 
-### 4.2 向现有页面添加删除函数
+1. 把 `pathname` 发送给 DELETE `/api/blob`；
+2. 等待删除完成；
+3. 再次调用 `loadImages()`；
+4. 立即刷新 Gallery。
 
-在 `+page.svelte` 的 `<script>` 中追加：
-
-```ts
-async function deleteImage(pathname: string) {
-  const response = await fetch('/api/blob', {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ pathname })
-  });
-
-  if (!response.ok) {
-    error = 'Failed to delete image';
-    return;
-  }
-
-  await loadImages();
-}
-```
-
-在 Gallery 的图片信息后加入：
-
-```svelte
-<button onclick={() => deleteImage(photo.pathname)}>
-  Delete
-</button>
-```
-
-点击 Delete 后，前端会重新调用 `loadImages()`，因此 Gallery 会立即更新。Vercel CDN 和浏览器中的旧 URL 可能短暂保留缓存。
+Vercel CDN 或浏览器中的旧 URL 可能短暂保留缓存，但 Blob 已从列表中删除。
 
 ## Stage 5：Advanced Concepts
 
@@ -409,7 +254,7 @@ Browser → SvelteKit Server → Vercel Blob
 
 - 实现简单，适合本次小图片 Demo。
 - 文件先经过 Vercel Function。
-- Vercel Function 的请求体上限是 4.5 MB，所以代码主动限制为 4 MB。
+- Vercel Function 的请求体上限是 4.5 MB，所以 Demo 主动限制为 4 MB。
 
 ### Client Upload
 
@@ -433,29 +278,33 @@ npm run build
 
 预期结果：
 
-- `npm run check` 为 0 errors、0 warnings。
-- `npm run build` 成功。
-- 上传图片后可以打开 Blob URL。
-- Load Gallery 可以显示 `tech-share/` 中的图片。
+- `npm run check` 为 0 errors、0 warnings；
+- `npm run build` 成功；
+- Upload 会显示新图片和 Blob URL；
+- Load Gallery 会显示 `tech-share/` 中的图片；
 - Delete 会把图片从 Gallery 移除。
 
-如果不需要现场逐步实现，可以直接运行当前 `finial` 目录：
+如果不需要逐步实现，可以直接运行完整的 `finial`：
 
 Git Bash：
 
 ```bash
+cd ../finial
 npm install
 cp .env.example .env.local
-npm run dev -- --open
+npm run dev
 ```
 
 PowerShell：
 
 ```powershell
+cd ../finial
 npm install
 Copy-Item .env.example .env.local
-npm run dev -- --open
+npm run dev
 ```
+
+然后在 VS Code Integrated Browser 中打开终端显示的 localhost 地址。
 
 ## 课堂结束时的三句话
 

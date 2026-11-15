@@ -4,7 +4,7 @@
 
 ## 仓库结构
 
-- [`demo/`](demo/)：课堂开始时打开的版本。SvelteKit 和 `@vercel/blob` 已完成初始化，但还没有实现 Gallery 功能。
+- [`demo/`](demo/)：课堂开始时打开的版本。完整前端和后端接口骨架已准备好，只缺少三个 Blob SDK 调用。
 - [`finial/`](finial/)：完整的调试版本，包含 `put()`、`list()` 和 `del()`。
 - [`finial/README.md`](finial/README.md)：从 `demo` 逐步做到 `finial` 的现场复制粘贴指南。
 
@@ -34,7 +34,7 @@
 cd demo
 npm install
 cp .env.example .env.local
-npm run dev -- --open
+npm run dev
 ```
 
 最终版本：
@@ -43,7 +43,7 @@ npm run dev -- --open
 cd finial
 npm install
 cp .env.example .env.local
-npm run dev -- --open
+npm run dev
 ```
 
 ### PowerShell
@@ -54,7 +54,7 @@ npm run dev -- --open
 cd demo
 npm install
 Copy-Item .env.example .env.local
-npm run dev -- --open
+npm run dev
 ```
 
 最终版本：
@@ -63,10 +63,12 @@ npm run dev -- --open
 cd finial
 npm install
 Copy-Item .env.example .env.local
-npm run dev -- --open
+npm run dev
 ```
 
 运行上传、列表和删除功能前，需要先在 `.env.local` 中配置自己的 Vercel Blob 凭据。详细配置过程见 [`finial/README.md`](finial/README.md)。
+
+启动后，在 VS Code 中按 `Ctrl + Alt + /` 打开 Integrated Browser，并访问终端显示的 localhost 地址；不需要打开外部浏览器。
 
 ## 安全说明
 
