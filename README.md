@@ -13,18 +13,6 @@
 5. 使用 `list()` 加载 `tech-share/` 路径下的所有图片；
 6. 使用 `del()` 从云端删除选中的图片。
 
-整个过程可以概括为：
-
-```text
-Browser → SvelteKit Server → Vercel Blob
-```
-
-前端界面已经提前准备好。课堂 Coding 只修改后端文件，并按顺序学习：
-
-```text
-request.formData() → put() → list() → del()
-```
-
 ## 仓库结构
 
 ```text
@@ -122,17 +110,13 @@ vercel link
 vercel env pull .env.local
 ```
 
-如果 Vercel Dashboard 没有显示长期 Token，请使用 Dashboard 当前提供的 Project 连接方式和最新版 Vercel CLI。不要把 `.env.local` 上传到 GitHub。
-
 ### 0.3 启动开发服务器
 
-在 `practice` 中运行：
+在 `practice` 中运行(这一步建议在vscode里新建终端执行)：
 
 ```bash
 npm run dev
 ```
-
-不要添加 `--open`。在 VS Code 中按 `Ctrl + Alt + /` 打开 Integrated Browser，然后访问终端显示的 localhost 地址。端口通常是 `5173`，但应以终端实际地址为准。
 
 初始页面已经包含：
 
@@ -193,12 +177,6 @@ export const POST: RequestHandler = async ({ request }) => {
 ### 验证
 
 保存文件，选择一张图片并点击 Upload。
-
-页面应该显示类似：
-
-```text
-Received photo.jpg (123456 bytes)
-```
 
 这时图片只到达 SvelteKit 后端，还没有上传到 Vercel Blob。
 
