@@ -78,13 +78,26 @@ npm run dev -- --open
 
 浏览器显示 “Ready for Stage 1” 后即可开始现场演示。
 
+### 0.4 课堂文件检查
+
+开始演示前，以下文件已经全部存在：
+
+| 文件 | 开始时的状态 | 课堂操作 |
+| --- | --- | --- |
+| `src/routes/+page.svelte` | 最原始页面 | Stage 1 替换代码 |
+| `src/routes/api/blob/+server.ts` | 空文件 | Stage 1 粘贴代码 |
+| `src/env.ts` | 已完成初始化 | 无需修改 |
+| `.env.example` | 空白凭据模板 | 无需修改 |
+
+Stage 2–4 只会继续编辑已经存在的 `+page.svelte` 和 `+server.ts`，课堂现场没有任何新建文件或文件夹操作。
+
 ## Stage 1：Upload an Image
 
 目标：选择一张图片，点击 Upload，并获得 Vercel Blob 返回的 URL。
 
-### 1.1 创建后端接口
+### 1.1 粘贴后端接口代码
 
-新建 `src/routes/api/blob/+server.ts`，复制以下代码：
+打开 `demo` 中已经提前创建好的空文件 `src/routes/api/blob/+server.ts`，直接粘贴以下代码。课堂现场不需要新建文件或文件夹：
 
 ```ts
 import type { RequestHandler } from './$types';
@@ -226,7 +239,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 目标：把单张图片上传器扩展成 Gallery。
 
-### 3.1 添加 GET 接口
+### 3.1 向现有后端文件添加 GET 接口
 
 把 `+server.ts` 的 SDK 导入改为：
 
@@ -253,7 +266,7 @@ export const GET: RequestHandler = async () => {
 };
 ```
 
-### 3.2 添加前端状态和请求函数
+### 3.2 向现有页面添加状态和请求函数
 
 在 `+page.svelte` 的 `<script>` 中，放在已有状态后面：
 
@@ -317,7 +330,7 @@ async function loadImages() {
 
 目标：使用 `del()` 删除选中的 Blob。
 
-### 4.1 添加 DELETE 接口
+### 4.1 向现有后端文件添加 DELETE 接口
 
 把 `+server.ts` 的 SDK 导入改为：
 
@@ -351,7 +364,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
 
 pathname 检查可防止这个 Demo 接口删除 `tech-share/` 之外的 Blob。
 
-### 4.2 添加前端删除函数
+### 4.2 向现有页面添加删除函数
 
 在 `+page.svelte` 的 `<script>` 中追加：
 
