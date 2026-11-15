@@ -1,66 +1,71 @@
+<p align="right">
+  <strong>English</strong> | <a href="./README.zh-CN.md">简体中文</a>
+</p>
+
 # Vercel Blob Cloud Photo Gallery Tech Share
 
-这是一个用于课堂 Tech Share 的 SvelteKit 项目，演示如何使用 Vercel Blob 构建一个简单的云端图片库。
+This is a SvelteKit project for a classroom Tech Share. It demonstrates how to build a simple cloud photo gallery with Vercel Blob.
 
-## 最终效果
+## Final Result
 
-完成后的页面支持：
+The completed page can:
 
-1. 选择一张 JPG、PNG 或 WebP 图片；
-2. 检查图片格式，并限制图片小于 4 MB；
-3. 使用 `put()` 把图片上传到 Vercel Blob；
-4. 使用 Blob 返回的 Public URL 显示图片；
-5. 使用 `list()` 加载 `tech-share/` 路径下最多 30 张图片；
-6. 使用 `del()` 从云端删除选中的图片。
+1. Select a JPG, PNG, or WebP image;
+2. Validate the image format and limit the file size to under 4 MB;
+3. Upload the image to Vercel Blob with `put()`;
+4. Display the image using the Public URL returned by Blob;
+5. Load up to 30 images under the `tech-share/` path with `list()`;
+6. Delete a selected image from cloud storage with `del()`.
 
-## 仓库结构
+## Repository Structure
 
 ```text
 tech share/
-├── demo/      课堂起点：完整前端，后端文件为空
-├── finial/    最终版本：包含完整前端和后端
-└── README.md  本项目唯一的说明文档
+├── demo/             Classroom starting point: complete frontend, empty backend file
+├── finial/           Final version: complete frontend and backend
+├── README.md         Default English documentation
+└── README.zh-CN.md   Chinese documentation
 ```
 
-- [`demo/`](demo/)：课堂开始时复制的原始版本。
-- [`finial/`](finial/)：完成所有阶段后的参考版本。
-- `practice/`：你在本地创建的练习副本，已被 `.gitignore` 忽略。
+- [`demo/`](demo/) is the original version copied at the beginning of class.
+- [`finial/`](finial/) is the reference version after all stages are complete.
+- `practice/` is the local working copy you create. It is ignored by `.gitignore`.
 
-> `finial` 是本项目已经约定使用的目录名称，因此保留这一拼写。
+> `finial` is the directory name already chosen for this project, so this spelling is intentionally preserved.
 
-`demo` 和 `finial` 的前端相同。区别是：
+The frontends in `demo` and `finial` are identical. The difference is:
 
-- [`demo/src/routes/api/blob/+server.ts`](demo/src/routes/api/blob/+server.ts) 是提前创建好的空文件；
-- [`finial/src/routes/api/blob/+server.ts`](finial/src/routes/api/blob/+server.ts) 是完成后的完整后端。
+- [`demo/src/routes/api/blob/+server.ts`](demo/src/routes/api/blob/+server.ts) is a pre-created empty file;
+- [`finial/src/routes/api/blob/+server.ts`](finial/src/routes/api/blob/+server.ts) contains the completed backend.
 
-## 从 Demo 做到 Finial
+## From Demo to Finial
 
-课堂上一共分为四个阶段：
+The classroom demo is divided into four stages:
 
-| Stage | 后端功能 | 核心内容 |
+| Stage | Backend Feature | Core API |
 | --- | --- | --- |
-| 1 | 接收并检查文件 | `request.formData()` |
-| 2 | 上传图片 | `put()` |
-| 3 | 读取图片列表 | `list()` |
-| 4 | 删除图片 | `del()` |
+| 1 | Receive and validate a file | `request.formData()` |
+| 2 | Upload an image | `put()` |
+| 3 | Read the image list | `list()` |
+| 4 | Delete an image | `del()` |
 
-所有 Stage 都只修改这个已经存在的文件：
+Every stage modifies only this existing file:
 
 ```text
 practice/src/routes/api/blob/+server.ts
 ```
 
-课堂现场不需要创建任何新文件或文件夹，也不需要修改前端。
+You do not need to create any files or folders during class, and you do not need to modify the frontend.
 
-## Stage 0：课前准备
+## Stage 0: Pre-Class Setup
 
-### 0.1 创建干净的 Practice
+### 0.1 Create a Clean Practice Copy
 
-在仓库根目录执行以下命令。请逐行执行，不要复制终端提示符 `$`，也不要在行末添加 `\`。
+Run the following commands from the repository root. Execute them one line at a time. Do not copy the terminal prompt `$`, and do not add `\` to the end of a line.
 
-删除旧 `practice` 会同时删除其中的 `.env.local` 和练习代码。如果里面有需要保留的凭据，请先记录。
+Deleting the old `practice` directory also deletes its `.env.local` file and your practice changes. Save any credentials you still need before continuing.
 
-Git Bash：
+Git Bash:
 
 ```bash
 rm -rf -- practice
@@ -70,7 +75,7 @@ npm install
 cp .env.example .env.local
 ```
 
-PowerShell：
+PowerShell:
 
 ```powershell
 Remove-Item -Recurse -Force practice -ErrorAction SilentlyContinue
@@ -80,67 +85,67 @@ npm install
 Copy-Item .env.example .env.local
 ```
 
-后面的所有代码都写入 `practice`，这样原始 `demo` 会保持不变。
+All later code changes go into `practice`, leaving the original `demo` unchanged.
 
-### 0.2 创建并连接 Vercel Blob Store
+### 0.2 Create and Connect a Vercel Blob Store
 
-1. 在 Vercel Dashboard 创建或选择一个 Project。
-2. 打开该 Project 的 Storage 页面。
-3. 创建一个 Blob Store。
-4. 选择 **Public**，因为页面需要把 Blob URL 直接放入 `<img>`。
-5. 将 Blob Store 连接到 Project。
-6. 获取本地开发需要的环境变量。
+1. Create or select a Project in the Vercel Dashboard.
+2. Open the Project's Storage page.
+3. Create a Blob Store.
+4. Select **Public** because the page places the Blob URL directly in an `<img>` element.
+5. Connect the Blob Store to the Project.
+6. Get the environment variables required for local development.
 
-打开：
+Open:
 
 ```text
 practice/.env.local
 ```
 
-填入自己的凭据：
+Add your credential:
 
 ```env
 BLOB_READ_WRITE_TOKEN=your_real_token_here
 ```
 
-也可以在 `practice` 中使用 Vercel CLI：
+You can also use the Vercel CLI inside `practice`:
 
 ```bash
 vercel link
 vercel env pull .env.local
 ```
 
-### 0.3 启动开发服务器
+### 0.3 Start the Development Server
 
-在 `practice` 中运行(这一步建议在vscode里新建终端执行)：
+Run the following command inside `practice` (opening a new terminal in VS Code is recommended):
 
 ```bash
 npm run dev
 ```
 
-初始页面已经包含：
+The initial page already includes:
 
-- 图片选择框；
-- Upload 按钮；
-- 上传状态和图片预览；
-- Load Gallery 按钮；
-- Gallery 图片卡片；
-- Delete 按钮；
-- 所有前端请求和页面样式。
+- An image file picker;
+- An Upload button;
+- Upload status and image preview;
+- A Load Gallery button;
+- Gallery image cards;
+- Delete buttons;
+- All frontend requests and page styles.
 
-此时后端文件是空的，所以按钮还不能完成对应的云端操作。
+The backend file is still empty at this point, so the buttons cannot complete their cloud operations yet.
 
-## Stage 1：接收并检查文件
+## Stage 1: Receive and Validate a File
 
-### 粘贴位置
+### Where to Paste
 
-打开这个空文件：
+Open this empty file:
 
 ```text
 practice/src/routes/api/blob/+server.ts
 ```
 
-直接从第一行开始粘贴以下完整代码：
+Starting from the first line, paste the complete code below:
 
 ```ts
 import type { RequestHandler } from './$types';
@@ -166,57 +171,57 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 ```
 
-### 这段代码做什么
+### What This Code Does
 
-- 创建 POST 后端接口；
-- 使用 `request.formData()` 取得前端提交的文件；
-- 只接受 JPG、PNG 和 WebP；
-- 限制文件小于 4 MB；
-- 暂时返回文件名和大小，证明服务器已经收到文件。
+- Creates a POST backend endpoint;
+- Uses `request.formData()` to get the file submitted by the frontend;
+- Accepts only JPG, PNG, and WebP images;
+- Limits the file size to under 4 MB;
+- Temporarily returns the file name and size to prove that the server received the file.
 
-### 验证
+### Verify
 
-保存文件，选择一张图片并点击 Upload。
+Save the file, select an image, and click Upload.
 
-页面应该显示类似：
+The page should display something similar to:
 
 ```text
 Received photo.jpg (123456 bytes)
 ```
 
-这时图片只到达 SvelteKit 后端，还没有上传到 Vercel Blob。
+At this point, the image has reached the SvelteKit backend but has not been uploaded to Vercel Blob.
 
-## Stage 2：上传到 Vercel Blob
+## Stage 2: Upload to Vercel Blob
 
-继续修改：
+Continue editing:
 
 ```text
 practice/src/routes/api/blob/+server.ts
 ```
 
-### 2.1 粘贴两个导入
+### 2.1 Paste Two Imports
 
-找到文件第一行：
+Find the first line:
 
 ```ts
 import type { RequestHandler } from './$types';
 ```
 
-紧接着在它下面粘贴：
+Immediately below it, paste:
 
 ```ts
 import { put } from '@vercel/blob';
 import { BLOB_READ_WRITE_TOKEN } from '$app/env/private';
 ```
 
-这两个导入分别提供：
+These imports provide:
 
-- `put()`：把文件上传到 Vercel Blob；
-- `BLOB_READ_WRITE_TOKEN`：服务器访问 Blob Store 的私有凭据。
+- `put()`, which uploads a file to Vercel Blob;
+- `BLOB_READ_WRITE_TOKEN`, the server's private credential for accessing the Blob Store.
 
-### 2.2 替换 Stage 1 的临时响应
+### 2.2 Replace the Temporary Response from Stage 1
 
-找到 POST 接口末尾的：
+Find this code at the end of the POST endpoint:
 
 ```ts
 return Response.json({
@@ -224,7 +229,7 @@ return Response.json({
 });
 ```
 
-删除这段代码，然后在同一位置粘贴：
+Delete it, then paste the following code in the same location:
 
 ```ts
 const blob = await put(`tech-share/${file.name}`, file, {
@@ -239,47 +244,47 @@ return Response.json({
 });
 ```
 
-### 这段代码做什么
+### What This Code Does
 
-- 使用 `put()` 上传文件；
-- 把图片放在 `tech-share/` 路径下；
-- 设置 `access: 'public'`，让浏览器可以直接显示图片；
-- 使用随机后缀为同名文件生成不同 pathname，避免上传冲突；
-- 把 Blob 的 `url` 和 `pathname` 返回给前端。
+- Uploads the file with `put()`;
+- Places the image under the `tech-share/` path;
+- Sets `access: 'public'` so the browser can display the image directly;
+- Adds a random suffix so files with the same name receive different pathnames, preventing upload conflicts;
+- Returns the Blob `url` and `pathname` to the frontend.
 
-### 验证
+### Verify
 
-保存文件，再次选择图片并点击 Upload。
+Save the file, select an image again, and click Upload.
 
-页面应该显示 Upload successful、文件链接和图片预览。图片现在位于 Vercel Blob，而不是本地项目中。
+The page should show Upload successful, a link to the file, and an image preview. The image is now stored in Vercel Blob rather than in the local project.
 
-## Stage 3：读取图片列表
+## Stage 3: Read the Image List
 
-继续修改：
+Continue editing:
 
 ```text
 practice/src/routes/api/blob/+server.ts
 ```
 
-### 3.1 修改 Blob SDK 导入
+### 3.1 Update the Blob SDK Import
 
-找到：
+Find:
 
 ```ts
 import { put } from '@vercel/blob';
 ```
 
-替换为：
+Replace it with:
 
 ```ts
 import { list, put } from '@vercel/blob';
 ```
 
-这会在已有的 `put()` 之外，再导入读取 Blob 列表需要的 `list()`。
+This imports `list()` for reading the Blob list while keeping the existing `put()` import.
 
-### 3.2 在文件末尾添加 GET 接口
+### 3.2 Add a GET Endpoint at the End of the File
 
-滚动到 `+server.ts` 最底部，在 POST 接口结束的 `};` 后面另起一行，粘贴：
+Scroll to the bottom of `+server.ts`. After the `};` that closes the POST endpoint, start a new line and paste:
 
 ```ts
 export const GET: RequestHandler = async () => {
@@ -298,44 +303,44 @@ export const GET: RequestHandler = async () => {
 };
 ```
 
-### 这段代码做什么
+### What This Code Does
 
-- 创建 GET 后端接口；
-- 使用 `list()` 读取 `tech-share/` 路径下的文件；
-- 最多读取 30 个 Blob；
-- 只把前端需要的 `url` 和 `pathname` 返回。
+- Creates a GET backend endpoint;
+- Uses `list()` to read files under the `tech-share/` path;
+- Reads up to 30 Blobs;
+- Returns only the `url` and `pathname` needed by the frontend.
 
-### 验证
+### Verify
 
-保存文件，点击页面上的 Load Gallery。页面应该显示已经上传的图片。刷新页面后再次点击，图片仍然存在。
+Save the file and click Load Gallery. The page should display the images you uploaded. Refresh the page and click the button again; the images should still be there.
 
-## Stage 4：删除图片
+## Stage 4: Delete an Image
 
-继续修改：
+Continue editing:
 
 ```text
 practice/src/routes/api/blob/+server.ts
 ```
 
-### 4.1 修改 Blob SDK 导入
+### 4.1 Update the Blob SDK Import
 
-找到：
+Find:
 
 ```ts
 import { list, put } from '@vercel/blob';
 ```
 
-替换为：
+Replace it with:
 
 ```ts
 import { del, list, put } from '@vercel/blob';
 ```
 
-这会加入删除 Blob 需要的 `del()`。
+This adds the `del()` function needed to delete a Blob.
 
-### 4.2 在文件末尾添加 DELETE 接口
+### 4.2 Add a DELETE Endpoint at the End of the File
 
-滚动到 `+server.ts` 最底部，在 GET 接口结束的 `};` 后面另起一行，粘贴：
+Scroll to the bottom of `+server.ts`. After the `};` that closes the GET endpoint, start a new line and paste:
 
 ```ts
 export const DELETE: RequestHandler = async ({ request }) => {
@@ -359,37 +364,37 @@ export const DELETE: RequestHandler = async ({ request }) => {
 };
 ```
 
-### 这段代码做什么
+### What This Code Does
 
-- 创建 DELETE 后端接口；
-- 从前端请求中读取要删除的 `pathname`；
-- 确保只能删除 `tech-share/` 路径下的文件；
-- 使用 `del()` 删除对应 Blob；
-- 返回删除成功结果。
+- Creates a DELETE backend endpoint;
+- Reads the `pathname` to delete from the frontend request;
+- Ensures that only files under the `tech-share/` path can be deleted;
+- Deletes the matching Blob with `del()`;
+- Returns a successful result.
 
-### 验证
+### Verify
 
-保存文件，点击 Load Gallery，然后点击任意图片卡片上的 Delete。前端会自动重新加载 Gallery，被删除的图片应该消失。
+Save the file, click Load Gallery, and then click Delete on any image card. The frontend automatically reloads the Gallery, and the deleted image should disappear.
 
-## 完成后的后端结构
+## Completed Backend Structure
 
-完成 Stage 1–4 后，`practice/src/routes/api/blob/+server.ts` 应该依次包含：
+After completing Stages 1–4, `practice/src/routes/api/blob/+server.ts` should contain the following sections in order:
 
 ```text
-导入 RequestHandler、put、list、del 和私有 Token
+Import RequestHandler, put, list, del, and the private token
 │
-├── POST    接收并上传图片
-├── GET     读取图片列表
-└── DELETE  删除指定图片
+├── POST    Receive and upload an image
+├── GET     Read the image list
+└── DELETE  Delete a selected image
 ```
 
-如果操作中出现问题，可以和完整参考文件比较：
+If something goes wrong, compare your code with the completed reference file:
 
 [`finial/src/routes/api/blob/+server.ts`](finial/src/routes/api/blob/+server.ts)
 
-## 安全说明
+## Security Notes
 
-- `.env.local` 已被 Git 忽略；
-- 不要把真实的 `BLOB_READ_WRITE_TOKEN` 写入代码、README、截图或 Git 提交；
-- 仓库中的 `.env.example` 只有凭据占位符；
-- 这是没有身份验证、用户授权或限流的课堂 Demo，不应直接作为公开生产上传接口使用。
+- `.env.local` is ignored by Git;
+- Never put a real `BLOB_READ_WRITE_TOKEN` in source code, a README, screenshots, or Git commits;
+- The repository's `.env.example` files contain only credential placeholders;
+- This classroom demo has no authentication, user authorization, or rate limiting and should not be used directly as a public production upload API.
