@@ -10,7 +10,7 @@
 2. 检查图片格式，并限制图片小于 4 MB；
 3. 使用 `put()` 把图片上传到 Vercel Blob；
 4. 使用 Blob 返回的 Public URL 显示图片；
-5. 使用 `list()` 加载 `tech-share/` 路径下的所有图片；
+5. 使用 `list()` 加载 `tech-share/` 路径下最多 30 张图片；
 6. 使用 `del()` 从云端删除选中的图片。
 
 ## 仓库结构
@@ -178,6 +178,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 保存文件，选择一张图片并点击 Upload。
 
+页面应该显示类似：
+
+```text
+Received photo.jpg (123456 bytes)
+```
+
 这时图片只到达 SvelteKit 后端，还没有上传到 Vercel Blob。
 
 ## Stage 2：上传到 Vercel Blob
@@ -238,7 +244,7 @@ return Response.json({
 - 使用 `put()` 上传文件；
 - 把图片放在 `tech-share/` 路径下；
 - 设置 `access: 'public'`，让浏览器可以直接显示图片；
-- 使用随机后缀避免同名文件互相覆盖；
+- 使用随机后缀为同名文件生成不同 pathname，避免上传冲突；
 - 把 Blob 的 `url` 和 `pathname` 返回给前端。
 
 ### 验证
