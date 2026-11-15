@@ -8,6 +8,8 @@
 - [`finial/`](finial/)：完整的调试版本，包含 `put()`、`list()` 和 `del()`。
 - [`finial/README.md`](finial/README.md)：从 `demo` 逐步做到 `finial` 的现场复制粘贴指南。
 
+本地练习副本 `practice/` 已在仓库根目录的 `.gitignore` 中忽略，避免把课堂修改或 `.env.local` 凭据误提交到 Git。
+
 > `finial` 是本次项目约定的目录名称，因此保留这一拼写。
 
 ## Demo 最终效果
